@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .button-container {
+      margin-top: 50px;
+    }
+
+    .play-button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 0 10px;
+      transition: background-color 0.3s;
+    }
+
+    .play-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div class="button-container">
+      <button class="play-button" onclick="playWithFriend()">Play with Friend</button>
+      <button class="play-button" onclick="playWithComputer()">Play with Computer</button>
+    </div>
+  </div>
+
+  <script>
+    function playWithFriend() {
+      window.location.href = 'two_players_game.html';
+    }
+
+    function playWithComputer() {
+      window.location.href = 'play_with_computer.html';
+    }
+  </script>
+</body>
+</html>

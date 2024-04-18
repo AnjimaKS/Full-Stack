@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-tac-toe</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Custom CSS for Tic-tac-toe game */
+    body{
+	text-align: left;
+	font-size: 19px;
+	font-family:arial;
+	letter-spacing: 1px;
+	line-height: 27px;
+	margin:0;
+	user-select: none;
+}
+
+#container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	min-height:100vh;
+}
+
+#gameArea{
+	width: 400px;
+	height: 425px;
+	background-color: burlywood;
+	border-radius: 17px;
+	box-shadow: 7px 7px 17px rgb(0 0 0 / 50%);
+}
+
+.scoreSection{
+	display: inline-block;
+	width: calc(50% - 10px);
+	padding: 5px;
+	text-align: center;
+}
+
+.score{
+	display:block;
+	font-size:34px;
+	position: relative;
+	top: 1px;
+}
+
+#gameBoard{
+	border: 1px solid;
+	width: 350px;
+	height: 323px;
+	position: relative;
+	left: 25px;
+	top: 9px;
+	background-color: #000;
+}
+
+#gameBoardContent{
+	font-family: cursive;
+	color: #fff;
+	transition:.5s;
+}
+
+#menuSpan{
+	font-size: 32px;
+	padding: 10px;
+	text-align: center;
+	line-height: 49px;
+	letter-spacing: 1px;
+	position: relative;
+	top: 34px;
+}
+
+.menuOption{
+	display: inline-block;
+	text-align: center;
+	width: 50%;
+	position: relative;
+	font-size: 94px;
+	top: 86px;
+	cursor: pointer;
+}
+
+#one {grid-area:one;}
+#two {grid-area:two;}
+#three {grid-area:three;}
+#four {grid-area:four;}
+#five {grid-area:five;}
+#six {grid-area:six;}
+#seven {grid-area:seven;}
+#eight {grid-area:eight;}
+#nine {grid-area:nine;}
+
+#gameWrapper{
+	display: grid;
+	grid-template-areas:
+		'one two three'
+		'four five six'
+		'seven eight nine';
+	height:323px;
+}
+
+#gameWrapper > div{
+	border:4px solid;
+	padding: 15px 0;
+	text-align: center;
+	font-size: 28px;
+	cursor: pointer;
+	transition:.4s;
+}
+
+.boardMark{
+	position: absolute;
+	font-size: 95px;
+	margin-left: -38px;
+	margin-top: 14px;
+}
+
+#notification{
+	position: absolute;
+	bottom: 136px;
+	left: calc(50% - 94px);
+	color: white;
+	background-color: green;
+	padding: 10px 25px;
+	font-size: 32px;
+	border: 4px solid red;
+	transition: .75s;
+}
+  </style>
+</head>
+<body>
+  <script>
+    let player = '';
+let turn = 0;
+let gameStart = 0;
+let count = 0;
+
+let container = document.createElement('div');
+container.id = 'container';
+document.body.prepend(container);
+
+let gameArea = document.createElement('div');
+gameArea.id = 'gameArea';
+container.append(gameArea);
+
+let scoreBoard = document.createElement('div');
+scoreBoard.id = 'scoreBoard';
+gameArea.append(scoreBoard);
+
+let scoreTypes = ['player', 'computer'];
+for(let i = 0; i < scoreTypes.length; i++){
+	let scoreSection = document.createElement('div');
+	scoreSection.className = 'scoreSection';
+	gameArea.append(scoreSection);
+
+	let scoreName = document.createElement('span');
+	scoreName.className = 'scoreName';
+	scoreName.innerText = scoreTypes[i];
+	scoreSection.append(scoreName);
+
+	let score = document.createElement('span');
+	score.id = scoreTypes[i] + 'Score';
+	score.className = 'score';
+	score.innerText = '0';
+	scoreSection.append(score);
+}
+
+let gameBoard = document.createElement('div');
+gameBoard.id = 'gameBoard';
+gameArea.append(gameBoard);
+
+let gameBoardContent = document.createElement('div');
+gameBoardContent.id = 'gameBoardContent';
+gameBoard.append(gameBoardContent);
+
+let blocks = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+
+let winCombos = [
+	['one', 'two', 'three'],
+	['four', 'five', 'six'],
+	['seven', 'eight', 'nine'],
+	['one', 'four', 'seven'],
+	['two', 'five', 'eight'],
+	['three', 'six', 'nine'],
+	['one', 'five', 'nine'],
+	['three', 'five', 'seven']
+];
+
+buildMenu();
+
+function checkWin(){
+	for(let i = 0; i < winCombos.length; i++){
+		let currentCheck = '';
+		let notificationText = '';
+		for(let j = 0; j < winCombos[i].length; j++){
+			currentCheck += document.getElementById(winCombos[i][j]).innerText;
+		}
+		if(currentCheck == 'XXX' || currentCheck == 'OOO'){
+			gameStart = 0;
+			count = 0;
+			let winner = (currentCheck == 'XXX')? 'X' : 'O';
+			if(winner == player){
+				playerScore.innerText = parseInt(playerScore.innerText) + 1;
+				notificationText = 'You won!';
+			}else{
+				computerScore.innerText = parseInt(computerScore.innerText) + 1;
+				notificationText = 'You lost!';
+			}
+			showNotification(notificationText);
+		}
+		else if(count == 9){
+			gameStart = 0;
+			count = 0;
+			notificationText = 'It\'s a draw!';
+			showNotification(notificationText);
+		}
+	}
+}
+
+function showNotification(msg){
+	let notification = document.createElement('div');
+	notification.id = 'notification';
+	notification.innerText = msg;
+	gameBoard.append(notification);
+	setTimeout(function(){
+		notification.style.cssText = 'opacity:0';
+	}, 1500);
+	setTimeout(function(){
+		notification.remove();
+		gameRestart();
+	}, 2250);
+}
+
+function fadeIn(el, time){
+	el.style.cssText = 'opacity:1';
+	setTimeout(function(){
+		el.removeAttribute('style');
+	}, time);
+}
+
+function addMark(e, p){
+	turn = (turn == 0)? 1 : 0;
+	let span = document.createElement('span');
+	span.className = 'boardMark';
+	span.innerText = p;
+	e.append(span);
+	count++;
+	checkWin();
+}
+
+function buildMenu(){
+	let menuSpan = document.createElement('div');
+	menuSpan.id = 'menuSpan';
+	menuSpan.innerText = 'What would you like to be?';
+	gameBoardContent.append(menuSpan);
+
+	let playerChoices = ['X', 'O'];
+	for(let i = 0; i < playerChoices.length; i++){
+		let menuOption = document.createElement('div');
+		menuOption.id = playerChoices[i];
+		menuOption.className = 'menuOption';
+		menuOption.innerText = playerChoices[i];
+		menuOption.addEventListener('click', function(){
+			player = this.innerText;
+			gameStart = 1;
+			gameBoardContent.style.cssText = 'opacity:0';
+			setTimeout(function(){
+				gameBoardContent.innerHTML = '';
+				buildBoard();
+			}, 500);
+		});
+		gameBoardContent.append(menuOption);
+	}
+	fadeIn(gameBoardContent, 500);
+}
+
+function gameRestart(){
+	count = 0;
+	gameWrapper.remove();
+	buildBoard();
+	if(turn == 1){
+		computerChoice();
+	}
+}
+
+function buildBoard(){
+	gameStart = 1;
+	let gameWrapper = document.createElement('div');
+	gameWrapper.id = 'gameWrapper';
+	gameBoardContent.append(gameWrapper);
+
+	for(let i = 0; i < blocks.length; i++){
+		let block = document.createElement('div');
+		block.id = blocks[i];
+		block.addEventListener('click', function(){
+			if(gameStart == 1 && turn == 0 && this.innerText == ''){
+				addMark(this, player);
+				computerChoice();
+			}
+		});
+		gameWrapper.append(block);
+	}
+	fadeIn(gameBoardContent, 500);
+}
+
+function computerChoice(){
+	let rand = Math.floor(Math.random() * blocks.length);
+	let block = document.getElementById(blocks[rand]);
+	if(gameStart == 1){
+		if(block.innerText == ''){
+			setTimeout(function(){
+				let mark = (player == 'X')? 'O' : 'X';
+				addMark(block, mark);
+			}, 1000);
+		}else{
+			computerChoice();
+		}
+	}
+}
+  </script>
+</body>
+</html>
